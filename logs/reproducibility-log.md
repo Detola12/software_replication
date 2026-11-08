@@ -112,7 +112,7 @@ loaded via a namespace (and not attached):
 - This leftover line overwrites the function's input with the BSAP data, so the BSFC model (exception flow characteristics) is built from BSAP data.
 - The published package therefore cannot produce the paper's BSFC results (RQ1 of the paper). The paper's numbers must have come from a different version of the code.
 - Not yet fixed. Next: run a corrected copy (line 223 commented out) and compare BSFC with Table 4.
-<<<<<<< Updated upstream
+
 ### 2026-10-25: BSFC fix and seeded rerun
 
 - Ran by: Benjamin
@@ -128,7 +128,7 @@ loaded via a namespace (and not attached):
     - BASE and BSAP unchanged by the fix and still match the paper
 - Result vs Table 5: significant flow metrics and their signs match the paper (Hadoop: 5 metrics, all positive; Hibernate: Throw Wrap and Type Prevalence negative, Invoked Method positive; Umbraco: none significant). The paper's "Documentation" effect for Hibernate is consistent with RatioCommentToCode (negative).
 - Conclusion: the paper's BSFC results came from code without the leftover line at 223. With that line removed, the published package reproduces every model in Table 4.
-=======
+
 
 ### 2026-11-05: Milestone 3 runs (Linux, R 4.3.3)
 

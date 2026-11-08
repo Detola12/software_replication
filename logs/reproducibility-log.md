@@ -138,3 +138,19 @@ loaded via a namespace (and not attached):
 - Sensitivity: 10 configurations plus 4 extra seeds, seed 2026, B = 1000. Significant sets identical across seeds; R2 standard deviation at most 0.003.
 - Fresh-copy check: scripts/run_all.sh run from a clean copy reproduced output/sensitivity/original and budget_10 exactly.
 >>>>>>> Stashed changes
+
+### 2026-11-08: Windows check of the A3 sensitivity pipeline
+
+- Ran by: Benjamin
+- Machine: Windows 11 x64, R 4.6.1 (rms 8.1-1, Hmisc 5.3-0), Git Bash
+- Code: commit 32861e8 (Emmanuel's configurable pipeline), no changes
+- Command:
+    - export CODE_DIR="$(pwd -W)/code"; export DATA_RDATA="$(pwd -W)/0-all_no_missing.RData"
+    - Rscript scripts/run_config.R config/original.R output/sensitivity_windows/original
+    - Windows R needs C:/ style paths, so the paths come from `pwd -W`; scripts/run_all.sh passes /c/ style paths and was not used
+- Output: output/sensitivity_windows/original/
+- Compared with the Linux run (output/sensitivity/original/) using scripts/compare_runs.R:
+    - Same models, budgets, potential predictors, cutoffs, final formulas, significant metrics and coefficient signs: all identical
+    - Optimism-reduced R2: 8 of 9 models identical to 3 decimals; Hadoop BSFC differs by 0.001
+- Result: REPRODUCED ACROSS OPERATING SYSTEMS (Linux R 4.3.3 vs Windows R 4.6.1)
+- Note: the 25 October Windows run gave Umbraco BSFC 0.093 because it ran the whole notebook; Section 1's bootstraps use up random numbers before Section 2. Running Section 2 alone gives 0.085 on both systems.

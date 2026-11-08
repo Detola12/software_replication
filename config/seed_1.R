@@ -1,0 +1,9 @@
+CONFIG_NAME    <- "seed_1"
+CORR_THRESHOLD <- 0.7
+BUDGET_DIV     <- 15
+REDUN_R2       <- 0.9
+LOG_TRANSFORM  <- TRUE
+SIG_P          <- 0.05
+BSFC_FIX       <- TRUE
+SEED           <- 1
+B_BOOT         <- 1000

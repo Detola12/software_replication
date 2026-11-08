@@ -1,0 +1,158 @@
+\documentclass[conference]{IEEEtran}
+\usepackage[T1]{fontenc}
+\usepackage{cite}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{float}
+\newcommand{\todo}[1]{\textcolor{red}{[#1]}}
+
+\begin{document}
+\sloppy
+
+\title{How Robust Are Exception Handling Defect Models?\\
+A2: Baseline, Artifacts, and Related Work}
+
+\author{\IEEEauthorblockN{Group 9: Emmanuel Adegboye, Benjamin Emeshili, Marco Spensieri}
+\IEEEauthorblockA{Software Maintenance and Evolution, Ontario Tech University\\
+Artifacts: \url{https://github.com/Detola12/software_replication}}}
+
+\maketitle
+
+\begin{abstract}
+We are replicating de P\'adua and Shang (MSR 2018), who found that some exception handling anti-patterns help explain post-release defects. This milestone reports a working baseline. Running the authors' replication package end to end reproduces their merged dataset exactly and reproduces the BASE and anti-pattern (BSAP) models in Table 4 of the paper. The exception flow (BSFC) model does not reproduce: a leftover line in the published code makes BSFC reuse the BSAP data, so every BSFC result is a copy of BSAP. The package also needed one fix to run on R 4.3 or later.
+\end{abstract}
+
+\section{Study Context and Related Work}
+De P\'adua and Shang~\cite{padua2018msr} asked whether exception handling practices add explanatory power to defect models built from traditional metrics. For each project they fit three logistic regression models of whether a file has a post-release defect: BASE (size, complexity, churn and ownership), BSFC (BASE plus exception flow characteristics, their RQ1) and BSAP (BASE plus 17 exception handling anti-patterns, their RQ2). The anti-pattern metrics come from their earlier study of anti-pattern prevalence~\cite{padua2017icpc}, and the flow metrics from their exception flow analysis~\cite{padua2017scam}.
+
+We study the same systems and releases as the original paper (Table~\ref{tab:systems}) and use the authors' published data. Keeping the data fixed means any difference we find comes from the analysis rather than from data collection.
+
+\begin{table}[!h]
+\centering
+\caption{Studied systems (from the original study)}
+\label{tab:systems}
+\footnotesize
+\begin{tabular}{@{}llll r@{}}
+\toprule
+Project & Lang. & Release & Last post-release tag & Files w/ catch \\
+\midrule
+Hadoop & Java & release-2.6.0 & rel/release-2.6.5 & 926 \\
+Hibernate & Java & 5.0.0.Final & 5.0.16 & 478 \\
+Umbraco & C\# & release-7.6.0 & release-7.6.12 & 321 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The literature informs three choices. First, Jiarpakdee et al.~\cite{jiarpakdee2021tse} show that how correlated metrics are removed changes which metrics a defect model ranks as important, and Shepperd et al.~\cite{shepperd2014bias} found that analysis choices explain much of the variation between published defect studies. Our extension therefore varies the five settings the original study fixed: the correlation cutoff (0.7), the redundancy cutoff ($R^2 = 0.9$), the predictor budget (one per 15 files), the $\log_{10}(x+1)$ transform and the backward-selection threshold ($p < 0.05$). Second, Tantithamthavorn et al.~\cite{tantithamthavorn2017tse} recommend the optimism-reduced bootstrap for defect models, so we keep the original 1,000-repetition bootstrap and add a fixed seed. Third, following Shull et al.~\cite{shull2008replication}, a close replication on the original data separates reproducibility (do we get the same numbers?) from robustness (do the conclusions survive other reasonable choices?). The predictor budget comes from Harrell's guidance~\cite{harrell2015rms}, which we revisit in the sensitivity analysis.
+
+\section{Data and Artifacts}
+\textbf{Source and revision.} The data and code are the authors' replication package.\footnote{\url{https://guipadua.github.io/eh-model-defects2018}} We downloaded it on 2 October 2026 from the site's GitHub source (\texttt{guipadua/guipadua.github.io}, folder \texttt{resources/}) because the direct download link was blocked on our network. Both archives are stored unchanged in our repository under \texttt{original-package/}, with these SHA-256 prefixes:
+\begin{itemize}
+\item \texttt{..\_scripts\_with\_input\_data.zip}: \texttt{2d6387a9ee0bdbd2} (5 input CSVs, 2 R notebooks, 2 helper scripts, the authors' saved outputs)
+\item \texttt{..\_data\_without\_missing.zip}: \texttt{6a8eee1f5e5940c8} (the authors' merged dataset)
+\end{itemize}
+
+\textbf{Inputs.} \texttt{File\_Level-Understand.csv} holds product metrics from the Understand tool. \texttt{File\_Level-Git-Jira.csv} holds process metrics and pre- and post-release defect counts. \texttt{File\_Level-Catch\_Based}, \texttt{Try\_Based} and \texttt{Throws\_Based.csv} hold the exception handling metrics produced by the authors' JTratch and NTratch analyzers.
+
+\textbf{Collection and cleaning.} We did not re-collect data. Notebook~0 merges the five files into one table of 10,195 files and 159 columns and removes files with missing values (the authors' step MC1). Notebook~1 keeps files that contain catch blocks, leaving 890 Hadoop, 440 Hibernate and 230 Umbraco files for modeling.
+
+\textbf{Environment.} R 4.6.1 (Windows 11 x64) in RStudio, with the rms, Hmisc, caret, e1071, plotly, BiodiversityR, logistf and rmarkdown packages installed from CRAN in October 2026. \texttt{sessionInfo()} output is saved per machine in \texttt{logs/}. No LLMs are used in the analysis.
+
+\textbf{Repository.} The repository contains the original package, our working copy of the code with each change marked \texttt{\# FIX}, the authors' saved outputs, our run's outputs, the reproducibility log, and a README with install and run steps.
+
+\section{Working Baseline}
+We ran both notebooks end to end on the study data on 2 October 2026. The model notebook takes about 25 minutes. Table~\ref{tab:compare} compares our results with Table 4 of the paper.
+
+\begin{table}[t]
+\centering
+\caption{Original paper vs.\ our reproduction (paper / ours)}
+\label{tab:compare}
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}llcccc@{}}
+\toprule
+Project & Model & Budget & Pot.\ pred. & Cutoff & Opt.-red.\ $R^2$ \\
+\midrule
+Hadoop & BASE & 59 / 59 & 10 / 10 & .70 / .70 & .33 / .33 \\
+ & BSAP & 59 / 59 & 23 / 23 & .70 / .70 & .35 / .35 \\
+ & BSFC & 59 / 59 & \textbf{31 / 23} & .70 / .70 & \textbf{.37 / .35} \\
+\midrule
+Hibernate & BASE & 29 / 29 & 18 / 18 & .70 / .70 & .21 / .21 \\
+ & BSAP & 29 / 29 & 19 / 19 & .70 / .70 & .23 / .23 \\
+ & BSFC & 29 / 29 & \textbf{27 / 19} & .70 / .70 & \textbf{.28 / .23} \\
+\midrule
+Umbraco & BASE & 15 / 15 & 12 / 12 & .70 / .70 & .09 / .09 \\
+ & BSAP & 15 / 15 & 16 / 16 & .67 / .67 & .18 / .18 \\
+ & BSFC & 15 / 15 & \textbf{23 / 16} & \textbf{.24 / .67} & \textbf{.09 / .18} \\
+\bottomrule
+\end{tabular}
+\\[2pt]
+\raggedright\scriptsize Bold marks values that differ from the paper.
+\end{table}
+
+\textbf{Observations.}
+\begin{enumerate}
+\item \emph{Data preparation reproduces exactly.} Our merged dataset matches the authors' published one in all 10,195 rows and 159 columns.
+\item \emph{BASE and BSAP reproduce.} Predictor budgets, numbers of potential predictors, adjusted correlation cutoffs and optimism-reduced $R^2$ all match Table 4. Coefficients match the authors' saved output to about $10^{-12}$.
+\item \emph{The significant metrics match Table 5 for BASE and BSAP.} The anti-patterns the paper reports are significant in our run too: Ignoring Interrupted Exception and Log and Throw in Hadoop, Dummy Handler in Hibernate, and Dummy Handler and Generic Catch in Umbraco.
+\item \emph{Bootstrap values vary slightly between runs.} Optimism-reduced values differ from the authors' saved output by at most 0.023, because the code sets no random seed.
+\item \emph{BSFC does not reproduce.} In our output and in the authors' own saved output, every BSFC row is identical to the BSAP row, including its formula and significant metrics. The cause is line 223 of \texttt{construction\_functions.R}, \texttt{data\_list = all\_list\_omitted\_m2}, a leftover line that overwrites the function's input with the BSAP data. The published package therefore cannot produce the paper's BSFC results. \todo{If the fixed rerun is done: add the corrected BSFC values here and say whether they match the paper. Otherwise keep: ``We are rerunning BSFC with this line removed.''}
+\end{enumerate}
+
+\textbf{Preparing the new study context.} We located all five settings in the code. The correlation cutoff is the variable \texttt{CORR\_THRESHOLD}. The predictor budget is the literal 15, hard-coded in four places across both helper files. The redundancy cutoff is never written; it comes from the default of Hmisc's \texttt{redun()}. The transform is \texttt{log10(x + 1)} in both helper files, and the selection threshold is \texttt{sls = .05} in \texttt{fastbw()}. The next step moves all five into one configuration file with a fixed seed, so each sensitivity configuration is a one-line change.
+
+\section{Scope and Limitations}
+\textbf{The package does not run unmodified on current R.} Since R 4.3, \texttt{\&\&} requires a single logical value. Line 270 of \texttt{analysis\_functions.R} applies it to \texttt{is.na()} of a fitted model, which returns one value per model element, and stops with an error. We replaced \texttt{!is.na(refit)} with \texttt{!isTRUE(is.na(refit))}, which keeps the original behaviour. Anyone rerunning the package needs this fix; it is documented in the README and log.
+
+\textbf{The BSFC bug affects RQ1 of the original paper.} Until the corrected BSFC model is verified, our sensitivity analysis can only be compared with the paper for BASE and BSAP. If the corrected BSFC still differs from Table 4, we will report the gap as a reproducibility finding and limit our RQ2 and RQ3 to BASE and BSAP, as planned in the proposal.
+
+\textbf{Small samples after cleaning.} Removing files with missing data leaves fewer files than the paper's Table 1 reports (Umbraco: 230 modeled files against 321 with catch blocks). This follows the authors' procedure, but with only 15 predictors allowed for Umbraco, a stricter budget of one per 20 files leaves 11 predictors and may make some Umbraco configurations impossible to fit. We will report those as not estimable.
+
+\textbf{Scattered settings.} Because the budget appears in four places and the redundancy cutoff relies on a default, changing one copy and not the others would silently produce a mixed configuration. Centralizing the settings comes before any sensitivity run.
+
+\textbf{Changes to the proposal.} The scope is unchanged. Two items move from A2 to A3: the configuration file with a fixed seed, and the corrected BSFC rerun if it is not finished for this milestone. The midterm on 30 October may delay the Umbraco runs by about a week; A3 (6 November) will cover Hadoop and Hibernate first.
+
+\section{Progress and Contributions}
+Completed: the authors' package archived with checksums; the full pipeline run end to end on R 4.6.1; data preparation, BASE and BSAP reproduced and compared with Tables 4 and 5; the R 4.3 incompatibility fixed; the BSFC bug diagnosed; all five sensitivity settings located in the code; and a repository with the code, data, outputs, reproducibility log and README (commit \texttt{e4c6a4f}). Table~\ref{tab:contrib} lists each member's tasks.
+
+\begin{table}[H]
+\centering
+\caption{Member tasks and contributions}
+\label{tab:contrib}
+\footnotesize
+\begin{tabular}{@{}p{0.22\columnwidth}p{0.72\columnwidth}@{}}
+\toprule
+Member & Main tasks and outputs \\
+\midrule
+E. Adegboye & First end-to-end run and comparison with the paper; R 4.3 fix; BSFC bug diagnosis; repository and reproducibility log; Sections I and V \\
+B. Emeshili & \todo{Benjamin: what you did, e.g., independent rerun on own machine, BSFC fix, Section III} \\
+M. Spensieri & \todo{Marco: what you did, e.g., environment check on own machine, Sections II and IV} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{thebibliography}{8}
+\footnotesize
+\bibitem{padua2018msr}
+G.~B. de P\'adua and W.~Shang, ``Studying the relationship between exception handling practices and post-release defects,'' in \emph{Proc. 15th Int. Conf. Mining Software Repositories (MSR)}, 2018, doi: 10.1145/3196398.3196435.
+\bibitem{padua2017icpc}
+G.~B. de P\'adua and W.~Shang, ``Studying the prevalence of exception handling anti-patterns,'' in \emph{Proc. 25th Int. Conf. Program Comprehension (ICPC)}, 2017.
+\bibitem{padua2017scam}
+G.~B. de P\'adua and W.~Shang, ``Revisiting exception handling practices with exception flow analysis,'' in \emph{Proc. 17th Int. Working Conf. Source Code Analysis and Manipulation (SCAM)}, 2017.
+\bibitem{jiarpakdee2021tse}
+J.~Jiarpakdee, C.~Tantithamthavorn, and A.~E. Hassan, ``The impact of correlated metrics on the interpretation of defect models,'' \emph{IEEE Trans. Softw. Eng.}, vol.~47, no.~2, pp. 320--331, 2021.
+\bibitem{shepperd2014bias}
+M.~Shepperd, D.~Bowes, and T.~Hall, ``Researcher bias: The use of machine learning in software defect prediction,'' \emph{IEEE Trans. Softw. Eng.}, vol.~40, no.~6, pp. 603--616, 2014.
+\bibitem{tantithamthavorn2017tse}
+C.~Tantithamthavorn, S.~McIntosh, A.~E. Hassan, and K.~Matsumoto, ``An empirical comparison of model validation techniques for defect prediction models,'' \emph{IEEE Trans. Softw. Eng.}, vol.~43, no.~1, pp. 1--18, 2017.
+\bibitem{shull2008replication}
+F.~J. Shull, J.~C. Carver, S.~Vegas, and N.~Juristo, ``The role of replications in empirical software engineering,'' \emph{Empirical Softw. Eng.}, vol.~13, no.~2, pp. 211--218, 2008.
+\bibitem{harrell2015rms}
+F.~E. Harrell, \emph{Regression Modeling Strategies}, 2nd~ed. Springer, 2015.
+\end{thebibliography}
+
+\end{document}

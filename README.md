@@ -67,3 +67,22 @@ Notebook 2 takes about 25 minutes. Results are written to `output/base_test_1.cs
 - [ ] Sensitivity runs: Hadoop, Hibernate, Umbraco
 - [ ] Robustness classification
 - [ ] Independent rerun from this README
+
+## Sensitivity runs (Milestone 3)
+
+`code/` holds our configurable copy of the authors' helper functions: the five settings are read from a config file, the BSFC bug is fixed (`# FIX`), and every other change is marked `# CHANGED`. The original files at the top level are left as published.
+
+Run everything from the repository root (Linux, macOS or Git Bash on Windows):
+
+```bash
+bash scripts/run_all.sh                 # all 14 configurations, about 2 min each
+bash scripts/run_all.sh original no_log # or just some of them
+```
+
+- `config/` one file per configuration (see `config/README.md`)
+- `output/sensitivity/<config>/output/base_test_2.csv` raw results per configuration
+- `output/summary/` R2 per model (`r2.csv`), gain over BASE (`gain.csv`), stability of each significant metric (`stability.csv`) and Fig. 1 (`fig_gain.png`)
+
+**Locale:** the input CSVs start with a UTF-8 byte-order mark. In a non-UTF-8 locale R misreads the first column name and the data preparation merge fails with `'by' must specify a uniquely valid column`. `run_all.sh` sets `LANG=C.UTF-8` for this reason.
+
+Tested on Ubuntu 24.04 with R 4.3.3 (`logs/sessionInfo_linux.txt`); a fresh copy reproduced the stored outputs exactly.

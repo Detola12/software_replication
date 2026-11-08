@@ -1,0 +1,9 @@
+CONFIG_NAME    <- "budget_20"
+CORR_THRESHOLD <- 0.7
+BUDGET_DIV     <- 20
+REDUN_R2       <- 0.9
+LOG_TRANSFORM  <- TRUE
+SIG_P          <- 0.05
+BSFC_FIX       <- TRUE
+SEED           <- 2026
+B_BOOT         <- 1000

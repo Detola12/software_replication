@@ -1,0 +1,9 @@
+CONFIG_NAME    <- "corr_0.6"
+CORR_THRESHOLD <- 0.6
+BUDGET_DIV     <- 15
+REDUN_R2       <- 0.9
+LOG_TRANSFORM  <- TRUE
+SIG_P          <- 0.05
+BSFC_FIX       <- TRUE
+SEED           <- 2026
+B_BOOT         <- 1000

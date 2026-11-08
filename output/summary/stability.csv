@@ -1,0 +1,16 @@
+project,model,metric,sign,exact,concept,runs,original,corr_0.6,corr_0.8,budget_10,budget_20,redun_0.8,no_log,p_0.01,p_0.10
+Hadoop,BSAP,Avg..AP.Ignoring.Interrupted.Exception,+,9,9,9,Y,Y,Y,Y,Y,Y,Y,Y,Y
+Hadoop,BSAP,AP.Log.and.Throw,+,6,6,9,Y,-,-,Y,Y,Y,Y,-,Y
+Hadoop,BSAP,Potentially.Recoverable,+,6,6,9,Y,Y,-,Y,Y,Y,-,-,Y
+Hibernate,BSAP,Avg.Catch.SLOC,+,7,7,9,Y,-,Y,Y,Y,Y,Y,-,Y
+Hibernate,BSAP,Sum.of.AP.Dummy.Handler,+,7,8,9,Y,~,Y,Y,Y,Y,Y,-,Y
+Umbraco,BSAP,Avg..AP.Dummy.Handler,+,8,8,9,Y,Y,Y,Y,Y,Y,Y,-,Y
+Umbraco,BSAP,Sum.of.AP.Generic.Catch,+,7,7,9,Y,Y,Y,Y,-,Y,-,Y,Y
+Hadoop,BSFC,X..Try.in.Other,+,8,8,9,Y,Y,Y,Y,Y,Y,Y,-,Y
+Hadoop,BSFC,X..Handled.with.Log.1,+,9,9,9,Y,Y,Y,Y,Y,Y,Y,Y,Y
+Hadoop,BSFC,X..Handled.with.Method.1,+,6,6,9,Y,-,Y,Y,Y,Y,-,-,Y
+Hadoop,BSFC,X..Propagated.1,+,6,6,9,Y,-,Y,Y,Y,Y,-,-,Y
+Hadoop,BSFC,X..Specific,+,6,6,9,Y,-,Y,Y,Y,Y,-,-,Y
+Hibernate,BSFC,X..Handled.with.Throw.Wrap,-,6,7,9,Y,Y,~,Y,Y,Y,-,-,Y
+Hibernate,BSFC,Avg...Invoked.Method,+,8,8,9,Y,Y,Y,Y,Y,Y,Y,-,Y
+Hibernate,BSFC,Avg.Exc.Type.Prevalence,-,9,9,9,Y,Y,Y,Y,Y,Y,Y,Y,Y

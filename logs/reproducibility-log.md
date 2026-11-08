@@ -116,7 +116,7 @@ loaded via a namespace (and not attached):
 ### 2026-10-25: BSFC fix and seeded rerun
 
 - Ran by: Benjamin
-- - Machine: Windows 11 x64, R 4.6.1, run from VS Code terminal with Rscript
+- Machine: Windows 11 x64, R 4.6.1, run from VS Code terminal with Rscript
 - Changes made to code:
     - 1-Model_Construction.Rmd: added `set.seed(2026)` at the end of the setup chunk
     - construction_functions.R line 223: commented out `data_list = all_list_omitted_m2`
@@ -137,7 +137,7 @@ loaded via a namespace (and not attached):
 - BSFC fix: disabled construction_functions.R line 223 (data_list = all_list_omitted_m2). BSFC now reproduces Table 4: 31 / 27 / 23 potential predictors, Umbraco cutoff 0.24, optimism-reduced R2 .37 / .28 / .08 (paper .09; seed range .085 to .093). Significant flow metrics match Table 5 (HA-8 to HA-12, HB-6 to HB-8).
 - Sensitivity: 10 configurations plus 4 extra seeds, seed 2026, B = 1000. Significant sets identical across seeds; R2 standard deviation at most 0.003.
 - Fresh-copy check: scripts/run_all.sh run from a clean copy reproduced output/sensitivity/original and budget_10 exactly.
->>>>>>> Stashed changes
+
 
 ### 2026-11-08: Windows check of the A3 sensitivity pipeline
 
@@ -153,4 +153,4 @@ loaded via a namespace (and not attached):
     - Same models, budgets, potential predictors, cutoffs, final formulas, significant metrics and coefficient signs: all identical
     - Optimism-reduced R2: 8 of 9 models identical to 3 decimals; Hadoop BSFC differs by 0.001
 - Result: REPRODUCED ACROSS OPERATING SYSTEMS (Linux R 4.3.3 vs Windows R 4.6.1)
-- Note: the 25 October Windows run gave Umbraco BSFC 0.093 because it ran the whole notebook; Section 1's bootstraps use up random numbers before Section 2. Running Section 2 alone gives 0.085 on both systems.
+- Note: the 25 October Windows run gave Umbraco BSFC 0.093 most likely because it ran the whole notebook; Section 1's bootstraps use up random numbers before Section 2. Running Section 2 alone gives 0.085 on both systems.

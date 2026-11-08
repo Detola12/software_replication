@@ -220,7 +220,8 @@ dataApplyReduction <- function(data_list) {
 
 dataApplyReductionByModel <- function(data_list,model_type) { 
   
-  data_list = all_list_omitted_m2
+  # FIX: leftover line made BSFC reuse the BSAP data
+  # data_list = all_list_omitted_m2
   ### Correlation analysis (MC4)
   data_list_low_corr = vector("list", 0)
   for (i in 1:length(data_list)) {

@@ -29,6 +29,7 @@ require(caret, quietly = TRUE)
 require(BiodiversityR, quietly = TRUE)
 require(logistf, quietly = TRUE)
 require(rmarkdown, quietly = TRUE)
+   set.seed(2026)  # CHANGED: fixed seed so bootstrap results repeat
 ```
 # Constants and Functions
 ```{r}
